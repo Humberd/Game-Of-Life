@@ -2,7 +2,9 @@
 
 int getWorkers();
 
-void generateNewColumn(bool* oldLeft, bool* oldCenter, bool* oldRight, unsigned int size);
+bool* generateNewColumn(bool* oldLeft, bool* oldCenter, bool* oldRight, const unsigned int size);
+
+bool decideNewCellState(const bool* currentCell, const short* neighbourCells);
 
 short countLivingCells(const bool* left3, const bool* center3, const bool* right3);
 
