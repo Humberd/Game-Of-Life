@@ -2,23 +2,18 @@
 #include "worker.h"
 #include <exception>
 
-int getWorkers() {
-    return 5;
-}
+bool* generateNewColumn(bool* oldLeft, bool* oldCenter, bool* oldRight, const unsigned int height) {
+    const auto newColumn = new bool[height];
 
-
-bool* generateNewColumn(bool* oldLeft, bool* oldCenter, bool* oldRight, const unsigned int size) {
-    const auto newColumn = new bool[size];
-
-    for (unsigned int i = 0; i < size; i++) {
+    for (unsigned int i = 0; i < height; i++) {
         short neighbourCells;
         bool currentCell;
         if (i == 0) {
             neighbourCells = countLivingCellsBottomEdge(&oldLeft[0], &oldCenter[0], &oldRight[0]);
             currentCell = oldCenter[0];
-        } else if (i == size - 1) {
-            neighbourCells = countLivingCellsTopEdge(&oldLeft[size - 2], &oldCenter[size - 2], &oldRight[size - 2]);
-            currentCell = oldCenter[size - 1];
+        } else if (i == height - 1) {
+            neighbourCells = countLivingCellsTopEdge(&oldLeft[height - 2], &oldCenter[height - 2], &oldRight[height - 2]);
+            currentCell = oldCenter[height - 1];
         } else {
             neighbourCells = countLivingCells(&oldLeft[i - 1], &oldCenter[i - 1], &oldRight[i - 1]);
             currentCell = oldCenter[i];

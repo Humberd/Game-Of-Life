@@ -1,7 +1,5 @@
 ﻿#pragma once
 
-int getWorkers();
-
 bool* generateNewColumn(bool* oldLeft, bool* oldCenter, bool* oldRight, const unsigned int size);
 
 bool decideNewCellState(const bool* currentCell, const short* neighbourCells);
