@@ -9,7 +9,7 @@ namespace UnitTesting {
 
         TEST_METHOD(TestMethod1) {
 //            auto foo = new Test();
-//            Assert::AreEqual(5, foo->foo());
+            Assert::AreEqual(true + true, 2);
         }
 
     };
