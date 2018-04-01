@@ -1,18 +1,53 @@
 #include "stdafx.h"
 #include "worker.h"
-#include <exception>
+#include "file_manager.h"
+#include <chrono>
+#include <iostream>
+
+bool** serialIteration(bool** board, int boardSize, int iteration, bool* virtualColumn) {
+    auto start = std::chrono::steady_clock::now();
+
+    bool *oldLeft, *oldCenter, *oldRight;
+    bool** newBoard = new bool*[boardSize];
+    for (int i = 0; i < boardSize; i++) {
+        if (i == 0) {
+            oldLeft = virtualColumn;
+            oldCenter = board[i];
+            oldRight = board[i + 1];
+        } else if (i == boardSize - 1) {
+            oldLeft = board[i - 1];
+            oldCenter = board[i];
+            oldRight = virtualColumn;
+        } else {
+            oldLeft = board[i - 1];
+            oldCenter = board[i];
+            oldRight = board[i + 1];
+        }
+
+        newBoard[i] = generateNewColumn(oldLeft, oldCenter, oldRight, boardSize);
+    }
+
+    saveBoard(newBoard, boardSize, iteration);
+
+    const auto end = std::chrono::steady_clock::now();
+    const auto diff = end - start;
+    printf("Iteration %d ended in %fms\n", iteration, std::chrono::duration<double, std::milli>(diff).count());
+
+    return newBoard;
+}
 
 bool* generateNewColumn(bool* oldLeft, bool* oldCenter, bool* oldRight, const unsigned int height) {
     const auto newColumn = new bool[height];
 
+    short neighbourCells;
+    bool currentCell;
     for (unsigned int i = 0; i < height; i++) {
-        short neighbourCells;
-        bool currentCell;
         if (i == 0) {
             neighbourCells = countLivingCellsBottomEdge(&oldLeft[0], &oldCenter[0], &oldRight[0]);
             currentCell = oldCenter[0];
         } else if (i == height - 1) {
-            neighbourCells = countLivingCellsTopEdge(&oldLeft[height - 2], &oldCenter[height - 2], &oldRight[height - 2]);
+            neighbourCells = countLivingCellsTopEdge(&oldLeft[height - 2], &oldCenter[height - 2],
+                                                     &oldRight[height - 2]);
             currentCell = oldCenter[height - 1];
         } else {
             neighbourCells = countLivingCells(&oldLeft[i - 1], &oldCenter[i - 1], &oldRight[i - 1]);

@@ -6,6 +6,8 @@
 #include <cstdio>
 #pragma warning(disable:4996)
 
+auto currentTime = currentDateTime();
+
 void WritePGM(char* fname, bool** board, int boardSize) {
     FILE* file;
 
@@ -36,7 +38,7 @@ std::string currentDateTime() {
 void saveBoard(bool** board, int boardSize, int iteration) {
     std::string fileName = "screens";
     createFolder(fileName);
-    fileName += "/" + currentDateTime();
+    fileName += "/" + currentTime;
     createFolder(fileName);
 
     if (iteration <= 0) {

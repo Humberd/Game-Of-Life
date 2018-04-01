@@ -1,6 +1,8 @@
 ﻿#pragma once
 
-bool* generateNewColumn(bool* oldLeft, bool* oldCenter, bool* oldRight, const unsigned int size);
+bool** serialIteration(bool** board, int boardSize, int iteration, bool* virtualColumn);
+
+bool* generateNewColumn(bool* oldLeft, bool* oldCenter, bool* oldRight, const unsigned int height);
 
 bool decideNewCellState(const bool* currentCell, const short* neighbourCells);
 
