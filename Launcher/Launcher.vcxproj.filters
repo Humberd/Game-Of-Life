@@ -24,9 +24,6 @@
     <ClInclude Include="serial_launcher.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="board_utils.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="parallel_columns_launcher.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -39,9 +36,6 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="serial_launcher.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="board_utils.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="parallel_columns_launcher.cpp">
