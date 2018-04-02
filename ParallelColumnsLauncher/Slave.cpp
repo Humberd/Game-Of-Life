@@ -4,8 +4,13 @@
 #include "mpi_helpers.h"
 #include "defs.h"
 
+Slave::~Slave() {
+    for (auto bc : bcs) {
+        delete[] bc.column;
+    }
+}
 
-void Slave::getColumnsInCharge() {
+void Slave::recvColumnsInCharge() {
     for (;;) {
         BoardColumn bc;
         recv(bc, MASTER_RANK, INIT_COLUMNS_TAG, MPI_COMM_WORLD, boardSize);
@@ -15,7 +20,6 @@ void Slave::getColumnsInCharge() {
         bcs.push_back(bc);
     }
     if (bcs.empty()) {
-        printf("Slave %d received no columns to be in charge of. Terminating peacefully...", rank);
         return;
     }
 

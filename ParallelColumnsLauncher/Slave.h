@@ -3,18 +3,16 @@
 #include <vector>
 
 class Slave {
-private:
+public:
     int rank;
     int boardSize;
     std::vector<BoardColumn> bcs; // BoardColumnS
-public:
-
 
     Slave(int rank, int boardSize) : rank(rank),
                                      boardSize(boardSize) {
     }
 
-    ~Slave() = default;
+    ~Slave();
 
-    void getColumnsInCharge();
+    void recvColumnsInCharge();
 };
