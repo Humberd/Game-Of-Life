@@ -26,7 +26,7 @@ MPI_Datatype register_mpi_type(BoardColumn const&) {
 void send(BoardColumn& e, int dest, int tag, MPI_Comm comm, int boardSize) {
     const MPI_Datatype type = register_mpi_type(e);
     MPI_Send(&e, 1, type, dest, tag, comm);
-    MPI_Send(e.column, boardSize, MPI_INT, dest, tag + 1, comm);
+    MPI_Send(e.column, boardSize, MPI_C_BOOL, dest, tag + 1, comm);
     deregister_mpi_type(type);
 }
 
@@ -34,7 +34,7 @@ void recv(BoardColumn& e, int src, int tag, MPI_Comm comm, int boardSize) {
     const MPI_Datatype type = register_mpi_type(e);
     MPI_Recv(&e, 1, type, src, tag, comm, MPI_STATUS_IGNORE);
     e.column = new bool[boardSize];
-    MPI_Recv(e.column, boardSize, MPI_INT, src, tag + 1, comm, MPI_STATUS_IGNORE);
+    MPI_Recv(e.column, boardSize, MPI_C_BOOL, src, tag + 1, comm, MPI_STATUS_IGNORE);
     deregister_mpi_type(type);
 }
 

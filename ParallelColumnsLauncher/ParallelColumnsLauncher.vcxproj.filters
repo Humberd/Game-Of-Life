@@ -27,6 +27,15 @@
     <ClInclude Include="mpi_helpers.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="Slave.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="defs.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Master.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp">
@@ -36,6 +45,12 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="mpi_helpers.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Slave.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Master.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

@@ -151,14 +151,19 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="defs.h" />
+    <ClInclude Include="Master.h" />
     <ClInclude Include="mpi_helpers.h" />
     <ClInclude Include="resource.h" />
+    <ClInclude Include="Slave.h" />
     <ClInclude Include="stdafx.h" />
     <ClInclude Include="targetver.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="Master.cpp" />
     <ClCompile Include="mpi_helpers.cpp" />
     <ClCompile Include="ParallelColumnsLauncher.cpp" />
+    <ClCompile Include="Slave.cpp" />
     <ClCompile Include="stdafx.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>
