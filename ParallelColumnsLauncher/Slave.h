@@ -8,7 +8,6 @@ public:
     int rank;
     int boardSize;
     std::vector<BoardColumn> bcs; // BoardColumnS
-    std::vector<BoardColumn> newBcs;
     bool* virtualColumn;
 
     Slave(int rank, int boardSize) : rank(rank),
@@ -20,7 +19,9 @@ public:
 
     void recvColumnsInCharge();
 
-    void iteration();
+    void iteration(int iteration);
+
+    void saveColumns(int iteration);
 
     bool* getColumn(int columnIndex);
 };
