@@ -47,6 +47,12 @@ MPI_Request* sendAsync(BoardColumn& e, int dest, int tag, MPI_Comm comm, int boa
     return reqs;
 }
 
+MPI_Request* sendAsync(bool* column, int dest, int tag, MPI_Comm comm, int boardSize) {
+    MPI_Request* req = new MPI_Request();
+    MPI_Isend(column, boardSize, MPI_C_BOOL, dest, tag, comm, req);
+    return req;
+}
+
 void recv(BoardColumn& e, int src, int tag, MPI_Comm comm, int boardSize) {
     const MPI_Datatype type = register_mpi_type(e);
     MPI_Recv(&e, 1, type, src, tag, comm, MPI_STATUS_IGNORE);
@@ -66,6 +72,12 @@ MPI_Request* recvAsync(BoardColumn& e, int src, int tag, MPI_Comm comm, int boar
     MPI_Irecv(e.column, boardSize, MPI_C_BOOL, src, tag + 1, comm, &reqs[1]);
     deregister_mpi_type(type);
     return reqs;
+}
+
+MPI_Request* recvAsync(bool* column, int src, int tag, MPI_Comm comm, int boardSize) {
+    MPI_Request* req = new MPI_Request();
+    MPI_Irecv(column, boardSize, MPI_C_BOOL, src, tag + 1, comm, req);
+    return req;
 }
 
 void deregister_mpi_type(MPI_Datatype type) {

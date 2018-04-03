@@ -57,41 +57,44 @@ void Master::sendColumnsInCharge() {
 }
 
 void Master::recvColumnsToSave(int iteration) {
-    //    BoardColumn* newbcs = new BoardColumn[boardSize];
-    //    std::fill_n(newbcs, boardSize, BoardColumn());
-    //    MPI_Request* reqs = new MPI_Request[boardSize * 2];
-    //    MPI_Status* statuses = new MPI_Status[boardSize * 2];
+    //    bool** board = new bool*[boardSize];
+    //    MPI_Request* reqs = new MPI_Request[boardSize];
+    //    MPI_Status* statuses = new MPI_Status[boardSize];
+    //    std::fill_n(statuses, boardSize, MPI_Status());
     //    for (int i = 0; i < boardSize; ++i) {
+    //        board[i] = new bool[boardSize];
     //        MPI_Request* locReqs;
-    //        locReqs = recvAsync(newbcs[i], processesInCharge[i], SAVE_BOARD_PHASE_TAG, MPI_COMM_WORLD, boardSize);
+    //        locReqs = recvAsync(board[i], processesInCharge[i], SAVE_BOARD_PHASE_TAG, MPI_COMM_WORLD, boardSize);
     //
-    //        memcpy(reqs + i * 2, locReqs, 2);
-    //        delete[] locReqs;
+    //        reqs[i] = *locReqs;
     //    }
     //
     //    MPI_Waitall(boardSize, reqs, statuses);
     //    printf("Master - Iteration %d - Receiving %d columns to save.\n",
     //           iteration, boardSize);
     //
+    ////    for (int i = 0; i < boardSize; ++i) {
+    ////        int number_amount;
+    ////        MPI_Get_count(&statuses[i], MPI_C_BOOL, &number_amount);
+    ////        printf("Received %d numbers", number_amount);
+    ////    }
     //
-    //    bool** board = new bool*[boardSize];
+    //
     //    for (int i = 0; i < boardSize; ++i) {
-    //        board[i] = newbcs[i].column;
-    //        printf("columnIndex: %d\n", newbcs[i].columnIndex);
-    //        printf("Master - [%d, %d, %d]\n", newbcs[i].column[0], newbcs[i].column[1], newbcs[i].column[2]);
+    //        printf("Master - [%d, %d, %d]\n", board[i][0], board[i][1], board[i][2]);
     //
     //    }
     //    saveBoard(board, boardSize, iteration);
-    //    
-    //    
+    //
+    //
     //    cleanupBoard(board, boardSize);
     //    delete[] reqs, statuses;
     bool** board = new bool*[boardSize];
     for (int i = 0; i < boardSize; ++i) {
         BoardColumn bc;
+        board[i] = new bool[boardSize];
         recv(bc, processesInCharge[i], SAVE_BOARD_PHASE_TAG, MPI_COMM_WORLD, boardSize);
         board[i] = bc.column;
-        printf("Master - [%d, %d, %d]\n", bc.column[0], bc.column[1], bc.column[2]);
     }
 
     saveBoard(board, boardSize, iteration);
