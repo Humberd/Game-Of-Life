@@ -2,6 +2,8 @@
 #include "mpi_helpers.h"
 #include <cstddef>
 #include <iterator>
+#include <cstdarg>
+#include "globals.h"
 
 MPI_Datatype register_mpi_type(BoardColumn const&) {
     constexpr std::size_t num_members = 5;
@@ -82,4 +84,13 @@ MPI_Request* recvAsync(bool* column, int src, int tag, MPI_Comm comm, int boardS
 
 void deregister_mpi_type(MPI_Datatype type) {
     MPI_Type_free(&type);
+}
+
+void printf_debug(const char* format, ...) {
+    if (debugEnabled) {
+        va_list arglist;
+        va_start(arglist, format);
+        vprintf(format, arglist);
+        va_end(arglist);
+    }
 }

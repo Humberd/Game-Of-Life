@@ -24,3 +24,5 @@ MPI_Request* recvAsync(BoardColumn& e, int src, int tag, MPI_Comm comm, int boar
 MPI_Request* recvAsync(bool* column, int src, int tag, MPI_Comm comm, int boardSize);
 
 void deregister_mpi_type(MPI_Datatype type);
+
+void printf_debug(const char* format, ...);

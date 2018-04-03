@@ -152,6 +152,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="defs.h" />
+    <ClInclude Include="globals.h" />
     <ClInclude Include="Master.h" />
     <ClInclude Include="mpi_helpers.h" />
     <ClInclude Include="resource.h" />
@@ -160,6 +161,7 @@
     <ClInclude Include="targetver.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="globals.cpp" />
     <ClCompile Include="Master.cpp" />
     <ClCompile Include="mpi_helpers.cpp" />
     <ClCompile Include="ParallelColumnsLauncher.cpp" />

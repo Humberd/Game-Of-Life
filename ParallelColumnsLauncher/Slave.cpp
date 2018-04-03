@@ -27,16 +27,16 @@ void Slave::recvColumnsInCharge() {
         return;
     }
 
-    printf("Slave %d is in charge of %d columns: [", rank, bcs.size());
+    printf_debug("Slave %d is in charge of %d columns: [", rank, bcs.size());
     for (auto& boardColumn : bcs) {
         if (&boardColumn != &bcs.back()) {
-            printf("%d,", boardColumn.columnIndex);
+            printf_debug("%d,", boardColumn.columnIndex);
         } else {
-            printf("%d", boardColumn.columnIndex);
+            printf_debug("%d", boardColumn.columnIndex);
         }
 
     }
-    printf("]\n");
+    printf_debug("]\n");
 }
 
 void Slave::iteration(int iteration) {
@@ -47,7 +47,7 @@ void Slave::iteration(int iteration) {
         /* When this column has left neighbour and its not me (this process) */
         if (bcs[i].leftColumnProcRank != NO_SIDE_COLUM_PROC_RANK &&
             bcs[i].leftColumnProcRank != rank) {
-            printf("Slave %d - Iteration %d - Column %d has left neighbour Slave %d. Sending him my column...\n",
+            printf_debug("Slave %d - Iteration %d - Column %d has left neighbour Slave %d. Sending him my column...\n",
                    rank, iteration, bcs[i].columnIndex, bcs[i].leftColumnProcRank);
             MPI_Request* reqs;
             reqs = sendAsync(bcs[i], bcs[i].leftColumnProcRank, ITERATIONS_PHASE_TAG, MPI_COMM_WORLD, boardSize);
@@ -59,7 +59,7 @@ void Slave::iteration(int iteration) {
         /* When this column has right neighbour and its not me (this process) */
         if (bcs[i].rightColumnProcRank != NO_SIDE_COLUM_PROC_RANK &&
             bcs[i].rightColumnProcRank != rank) {
-            printf("Slave %d - Iteration %d - Column %d has right neighbour Slave %d. Sending him my column...\n",
+            printf_debug("Slave %d - Iteration %d - Column %d has right neighbour Slave %d. Sending him my column...\n",
                    rank, iteration, bcs[i].columnIndex, bcs[i].rightColumnProcRank);
             MPI_Request* reqs;
             reqs = sendAsync(bcs[i], bcs[i].rightColumnProcRank, ITERATIONS_PHASE_TAG, MPI_COMM_WORLD, boardSize);
@@ -74,18 +74,18 @@ void Slave::iteration(int iteration) {
     for (auto& bc : bcs) {
         /* When I (this process) handles left column */
         if (bc.leftColumnProcRank == rank) {
-            printf("Slave %d - Iteration %d - Column %d left neighbour is me. Getting it from my own resources.\n",
+            printf_debug("Slave %d - Iteration %d - Column %d left neighbour is me. Getting it from my own resources.\n",
                    rank, iteration, bc.columnIndex);
             leftColumn = getColumn(bc.columnIndex);
 
             /* When there is no left column */
         } else if (bc.leftColumnProcRank == NO_SIDE_COLUM_PROC_RANK) {
-            printf("Slave %d - Iteration %d - Column %d has no left neighbour. I'm virtualizing it.\n",
+            printf_debug("Slave %d - Iteration %d - Column %d has no left neighbour. I'm virtualizing it.\n",
                    rank, iteration, bc.columnIndex);
             leftColumn = virtualColumn;
 
         } else {
-            printf("Slave %d - Iteration %d - Column %d left column is in charge by Slave %d. Receiving...\n",
+            printf_debug("Slave %d - Iteration %d - Column %d left column is in charge by Slave %d. Receiving...\n",
                    rank, iteration, bc.columnIndex, bc.leftColumnProcRank);
             BoardColumn leftbc;
             recv(leftbc, bc.leftColumnProcRank, ITERATIONS_PHASE_TAG, MPI_COMM_WORLD, boardSize);
@@ -94,18 +94,18 @@ void Slave::iteration(int iteration) {
 
         /* When I (this process) handles right column */
         if (bc.rightColumnProcRank == rank) {
-            printf("Slave %d - Iteration %d - Column %d right neighbour is me. Getting it from my own resources.\n",
+            printf_debug("Slave %d - Iteration %d - Column %d right neighbour is me. Getting it from my own resources.\n",
                    rank, iteration, bc.columnIndex);
             rightColumn = getColumn(bc.columnIndex);
 
             /* When there is no right column */
         } else if (bc.rightColumnProcRank == NO_SIDE_COLUM_PROC_RANK) {
-            printf("Slave %d - Iteration %d - Column %d has no right neighbour. I'm virtualizing it.\n",
+            printf_debug("Slave %d - Iteration %d - Column %d has no right neighbour. I'm virtualizing it.\n",
                    rank, iteration, bc.columnIndex);
             rightColumn = virtualColumn;
 
         } else {
-            printf("Slave %d - Iteration %d - Column %d right column is in charge by Slave %d. Receiving...\n",
+            printf_debug("Slave %d - Iteration %d - Column %d right column is in charge by Slave %d. Receiving...\n",
                    rank, iteration, bc.columnIndex, bc.rightColumnProcRank);
             BoardColumn rightbc;
             recv(rightbc, bc.rightColumnProcRank, ITERATIONS_PHASE_TAG, MPI_COMM_WORLD, boardSize);
@@ -119,18 +119,17 @@ void Slave::iteration(int iteration) {
         newBcs.push_back(newbc);
     }
 
-    for (auto& bc : bcs) {
-        delete[] bc.column;
-    }
+//    for (auto& bc : bcs) {
+//        delete[] bc.column;
+//    }
     bcs = newBcs;
     newBcs.clear();
 }
 
 void Slave::saveColumns(int iteration) {
     for (auto& bc : bcs) {
-        printf("Slave %d - Iteration %d - Sending column %d to save...\n",
+        printf_debug("Slave %d - Iteration %d - Sending column %d to save...\n",
                rank, iteration, bc.columnIndex);
-        printf("Slave %d - [%d, %d, %d]\n", rank, bc.column[0], bc.column[1], bc.column[2]);
         sendAsync(bc, MASTER_RANK, SAVE_BOARD_PHASE_TAG, MPI_COMM_WORLD, boardSize);
     }
 }
