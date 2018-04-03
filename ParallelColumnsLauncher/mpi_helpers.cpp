@@ -4,15 +4,19 @@
 #include <iterator>
 
 MPI_Datatype register_mpi_type(BoardColumn const&) {
-    constexpr std::size_t num_members = 3;
-    int lengths[num_members] = {1, 0, 1};
+    constexpr std::size_t num_members = 5;
+    int lengths[num_members] = {1, 0, 1, 1, 1};
     MPI_Aint offsets[num_members] = {
         offsetof(BoardColumn, iteration),
         offsetof(BoardColumn, column),
-        offsetof(BoardColumn, columnIndex)
+        offsetof(BoardColumn, columnIndex),
+        offsetof(BoardColumn, leftColumnProcRank),
+        offsetof(BoardColumn, rightColumnProcRank)
     };
 
     MPI_Datatype types[num_members] = {
+        MPI_INT,
+        MPI_C_BOOL,
         MPI_INT,
         MPI_INT,
         MPI_INT
@@ -28,6 +32,19 @@ void send(BoardColumn& e, int dest, int tag, MPI_Comm comm, int boardSize) {
     MPI_Send(&e, 1, type, dest, tag, comm);
     MPI_Send(e.column, boardSize, MPI_C_BOOL, dest, tag + 1, comm);
     deregister_mpi_type(type);
+}
+
+MPI_Request* sendAsync(BoardColumn& e, int dest, int tag, MPI_Comm comm, int boardSize) {
+    MPI_Request* reqs = new MPI_Request[2] {
+        MPI_Request(),
+        MPI_Request(),
+    };
+    const MPI_Datatype type = register_mpi_type(e);
+    MPI_Isend(&e, 1, type, dest, tag, comm, &reqs[0]);
+    MPI_Isend(e.column, boardSize, MPI_C_BOOL, dest, tag + 1, comm, &reqs[1]);
+    deregister_mpi_type(type);
+
+    return reqs;
 }
 
 void recv(BoardColumn& e, int src, int tag, MPI_Comm comm, int boardSize) {
