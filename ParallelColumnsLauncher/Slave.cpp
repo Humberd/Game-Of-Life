@@ -128,8 +128,9 @@ void Slave::iteration(int iteration) {
 
 void Slave::saveColumns(int iteration) {
     for (auto& bc : bcs) {
-        printf("Slave %d - Iteration %d - Sending column %d to save...",
+        printf("Slave %d - Iteration %d - Sending column %d to save...\n",
                rank, iteration, bc.columnIndex);
+        printf("Slave %d - [%d, %d, %d]\n", rank, bc.column[0], bc.column[1], bc.column[2]);
         sendAsync(bc, MASTER_RANK, SAVE_BOARD_PHASE_TAG, MPI_COMM_WORLD, boardSize);
     }
 }
