@@ -7,6 +7,7 @@
 #include "board_utils.h"
 #include "file_manager.h"
 #include <algorithm>
+#include "globals.h"
 
 int getDestSlave(int columnIndex, int threads) {
     return (columnIndex % (threads - 1)) + 1;
@@ -63,8 +64,9 @@ void Master::recvColumnsToSave(int iteration) {
         recv(bc, processesInCharge[i], SAVE_BOARD_PHASE_TAG, MPI_COMM_WORLD, boardSize);
         board[i] = bc.column;
     }
-
-    saveBoard(board, boardSize, iteration);
+    if (saveImages) {
+        saveBoard(board, boardSize, iteration);
+    }
 
     cleanupBoard(board, boardSize);
 }

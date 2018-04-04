@@ -2,3 +2,4 @@
 #include "globals.h"
 
 bool debugEnabled = false;
+bool saveImages = true;
