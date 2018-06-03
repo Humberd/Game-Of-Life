@@ -49,9 +49,9 @@ MPI_Request* sendAsync(BoardColumn& e, int dest, int tag, MPI_Comm comm, int boa
     return reqs;
 }
 
-MPI_Request* sendAsync(bool* column, int dest, int tag, MPI_Comm comm, int boardSize) {
-    MPI_Request* req = new MPI_Request();
-    MPI_Isend(column, boardSize, MPI_C_BOOL, dest, tag, comm, req);
+MPI_Request sendAsync(bool* column, int dest, int tag, MPI_Comm comm, int boardSize) {
+    MPI_Request req;
+    MPI_Isend(column, boardSize, MPI_C_BOOL, dest, tag, comm, &req);
     return req;
 }
 

@@ -42,7 +42,7 @@ void Slave::recvColumnsInCharge() {
 }
 
 void Slave::iteration(int iteration) {
-    std::vector<MPI_Request*> requests;
+    std::vector<MPI_Request> requests;
     std::vector<BoardColumn> newBcs;
     /* Sending columns to neighbours */
     for (int i = 0; i < bcs.size(); ++i) {
@@ -89,7 +89,7 @@ void Slave::iteration(int iteration) {
             printf_debug("Slave %d - Iteration %d - Column %d left column is in charge by Slave %d. Receiving...\n",
                          rank, iteration, bc.columnIndex, bc.leftColumnProcRank);
             // leftColumn = new bool[boardSize];
-            // recv(leftColumnFromRemote, bc.leftColumnProcRank, ITERATIONS_PHASE_TAG, MPI_COMM_WORLD, boardSize);
+            recv(leftColumnFromRemote, bc.leftColumnProcRank, ITERATIONS_PHASE_TAG, MPI_COMM_WORLD, boardSize);
             leftColumn = leftColumnFromRemote;
         }
 
@@ -110,16 +110,9 @@ void Slave::iteration(int iteration) {
             printf_debug("Slave %d - Iteration %d - Column %d right column is in charge by Slave %d. Receiving...\n",
                          rank, iteration, bc.columnIndex, bc.rightColumnProcRank);
             // rightColumn = new bool[boardSize];
-            // recv(rightColumnFromRemote, bc.rightColumnProcRank, ITERATIONS_PHASE_TAG, MPI_COMM_WORLD, boardSize);
+            recv(rightColumnFromRemote, bc.rightColumnProcRank, ITERATIONS_PHASE_TAG, MPI_COMM_WORLD, boardSize);
             rightColumn = rightColumnFromRemote;
         }
-
-        // if (leftRequest != nullptr) {
-        //     MPI_Wait(leftRequest, MPI_STATUS_IGNORE);
-        // }
-        // if (rightRequest != nullptr) {
-        //     MPI_Wait(rightRequest, MPI_STATUS_IGNORE);
-        // }
 
         bool* newColumn = generateNewColumn(leftColumn, bc.column, rightColumn, boardSize);
 
@@ -134,14 +127,13 @@ void Slave::iteration(int iteration) {
     delete[] leftColumnFromRemote, rightColumnFromRemote;
 
     /* Await all the remaining requests */
-    MPI_Request tempReqs[2];
-    MPI_Status tempStatuses[2];
-    tempReqs[0] = *requests[0];
-    tempReqs[1] = *requests[1];
-    MPI_Request** requestsArray = requests.data();
+
+    MPI_Request* requestsArray = requests.data();
     MPI_Status* statusesArray = new MPI_Status[requests.size()];
-    // MPI_Waitall(2, tempReqs, tempStatuses);
-    MPI_Wait(&tempReqs[0], &tempStatuses[0]);
+    MPI_Waitall(requests.size(), requestsArray, statusesArray);
+    delete[] statusesArray;
+    requests.clear();
+
     //
     for (auto& bc : bcs) {
         delete[] bc.column;
