@@ -120,7 +120,7 @@ void Slave::iteration(int iteration) {
         newbc.column = newColumn;
         newBcs.push_back(newbc);
         // printf("Sleeping \n");
-        Sleep(1);
+        // Sleep(1);
 
     }
 
@@ -145,11 +145,19 @@ void Slave::iteration(int iteration) {
 }
 
 void Slave::saveColumns(int iteration) {
+    std::vector<MPI_Request> reqs;
     for (auto& bc : bcs) {
         printf_debug("Slave %d - Iteration %d - Sending column %d to save...\n",
                      rank, iteration, bc.columnIndex);
-        sendAsync(bc, MASTER_RANK, SAVE_BOARD_PHASE_TAG, MPI_COMM_WORLD, boardSize);
+        MPI_Request req= sendAsync(bc.column, MASTER_RANK, SAVE_BOARD_PHASE_TAG, MPI_COMM_WORLD, boardSize);
+
+        reqs.push_back(req);
     }
+
+    MPI_Status* statusesArray = new MPI_Status[reqs.size()];
+    MPI_Waitall(reqs.size(), reqs.data(), statusesArray);
+    delete[] statusesArray;
+    reqs.clear();
 }
 
 bool* Slave::getColumn(int columnIndex) {

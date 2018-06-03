@@ -59,10 +59,8 @@ void Master::sendColumnsInCharge() {
 void Master::recvColumnsToSave(int iteration) {
     bool** board = new bool*[boardSize];
     for (int i = 0; i < boardSize; ++i) {
-        BoardColumn bc;
         board[i] = new bool[boardSize];
-        recv(bc, processesInCharge[i], SAVE_BOARD_PHASE_TAG, MPI_COMM_WORLD, boardSize);
-        board[i] = bc.column;
+        recv(board[i], processesInCharge[i], SAVE_BOARD_PHASE_TAG, MPI_COMM_WORLD, boardSize);
     }
     if (saveImages) {
         saveBoard(board, boardSize, iteration);

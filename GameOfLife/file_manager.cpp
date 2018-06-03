@@ -4,9 +4,13 @@
 #include <string>
 #include <windows.h>
 #include <cstdio>
+#include <iomanip>
+#include <sstream>
 #pragma warning(disable:4996)
 
 auto currentTime = currentDateTime();
+
+const int maxLeadingZeros = 6;
 
 void WritePGM(char* fname, bool** board, int boardSize) {
     FILE* file;
@@ -44,7 +48,10 @@ void saveBoard(bool** board, int boardSize, int iteration) {
     if (iteration <= 0) {
         fileName += "/begin.pgm";
     } else {
-        fileName += "/iteration_" + std::to_string(iteration) + ".pgm";
+        std::stringstream ss;
+        ss << std::setw(maxLeadingZeros) << std::setfill('0') << iteration;
+        std::string stringifiedIterationWithLeadingZeros = ss.str();
+        fileName += "/iteration_" + stringifiedIterationWithLeadingZeros + ".pgm";
     }
     WritePGM(_strdup(fileName.c_str()), board, boardSize);
 }

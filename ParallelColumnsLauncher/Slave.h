@@ -8,6 +8,7 @@ public:
     int rank;
     int boardSize;
     std::vector<BoardColumn> bcs; // BoardColumnS
+    std::vector<MPI_Request> saveColumnRequests;
     bool* virtualColumn;
 
     Slave(int rank, int boardSize) : rank(rank),
