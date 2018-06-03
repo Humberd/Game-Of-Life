@@ -63,12 +63,8 @@ void recv(BoardColumn& e, int src, int tag, MPI_Comm comm, int boardSize) {
     deregister_mpi_type(type);
 }
 
-void recv(BoardColumn&e, int src, int tag, MPI_Comm comm, int boardSize, bool* board) {
-    const MPI_Datatype type = register_mpi_type(e);
-    MPI_Recv(&e, 1, type, src, tag, comm, MPI_STATUS_IGNORE);
-    e.column = board;
-    MPI_Recv(e.column, boardSize, MPI_C_BOOL, src, tag + 1, comm, MPI_STATUS_IGNORE);
-    deregister_mpi_type(type);
+void recv(bool* column, int src, int tag, MPI_Comm comm, int boardSize) {
+    MPI_Recv(column, boardSize, MPI_C_BOOL, src, tag, comm, MPI_STATUS_IGNORE);
 }
 
 MPI_Request* recvAsync(BoardColumn& e, int src, int tag, MPI_Comm comm, int boardSize) {

@@ -51,11 +51,8 @@ void Slave::iteration(int iteration) {
             bcs[i].leftColumnProcRank != rank) {
             printf_debug("Slave %d - Iteration %d - Column %d has left neighbour Slave %d. Sending him my column...\n",
                          rank, iteration, bcs[i].columnIndex, bcs[i].leftColumnProcRank);
-            MPI_Request* reqs;
-            // reqs = sendAsync(bcs[i], bcs[i].leftColumnProcRank, ITERATIONS_PHASE_TAG, MPI_COMM_WORLD, boardSize);
-            // requests.push_back(&reqs[0]);
-            // requests.push_back(&reqs[1]);
-            // delete[] reqs;
+            requests.push_back(sendAsync(bcs[i].column, bcs[i].leftColumnProcRank, ITERATIONS_PHASE_TAG, MPI_COMM_WORLD,
+                                         boardSize));
         }
 
         /* When this column has right neighbour and its not me (this process) */
@@ -63,22 +60,18 @@ void Slave::iteration(int iteration) {
             bcs[i].rightColumnProcRank != rank) {
             printf_debug("Slave %d - Iteration %d - Column %d has right neighbour Slave %d. Sending him my column...\n",
                          rank, iteration, bcs[i].columnIndex, bcs[i].rightColumnProcRank);
-            MPI_Request* reqs;
-            // reqs = sendAsync(bcs[i], bcs[i].rightColumnProcRank, ITERATIONS_PHASE_TAG, MPI_COMM_WORLD, boardSize);
-            // requests.push_back(&reqs[0]);
-            // requests.push_back(&reqs[1]);
-            // delete[] reqs;
+            requests.push_back(sendAsync(bcs[i].column, bcs[i].rightColumnProcRank, ITERATIONS_PHASE_TAG,
+                                         MPI_COMM_WORLD, boardSize));
         }
+
     }
 
     bool* leftColumn = nullptr;
     bool* rightColumn = nullptr;
-    bool deleteLeftColumn = false;
-    bool deleteRightColumn = false;
+    bool* leftColumnFromRemote = new bool[boardSize];
+    bool* rightColumnFromRemote = new bool[boardSize];
     /* Receiving columns from neighbours */
     for (auto& bc : bcs) {
-        deleteLeftColumn = false;
-        deleteRightColumn = false;
         /* When I (this process) handles left column */
         if (bc.leftColumnProcRank == rank) {
             printf_debug(
@@ -95,12 +88,9 @@ void Slave::iteration(int iteration) {
         } else {
             printf_debug("Slave %d - Iteration %d - Column %d left column is in charge by Slave %d. Receiving...\n",
                          rank, iteration, bc.columnIndex, bc.leftColumnProcRank);
-            BoardColumn leftbc;
-            leftColumn = new bool[boardSize];
-            // leftColumn = static_cast<bool*>(malloc(boardSize * sizeof(bool)));
-            // recv(leftbc, bc.leftColumnProcRank, ITERATIONS_PHASE_TAG, MPI_COMM_WORLD, boardSize);
-            // leftColumn = leftbc.column;
-            deleteLeftColumn = true;
+            // leftColumn = new bool[boardSize];
+            // recv(leftColumnFromRemote, bc.leftColumnProcRank, ITERATIONS_PHASE_TAG, MPI_COMM_WORLD, boardSize);
+            leftColumn = leftColumnFromRemote;
         }
 
         /* When I (this process) handles right column */
@@ -119,37 +109,39 @@ void Slave::iteration(int iteration) {
         } else {
             printf_debug("Slave %d - Iteration %d - Column %d right column is in charge by Slave %d. Receiving...\n",
                          rank, iteration, bc.columnIndex, bc.rightColumnProcRank);
-            BoardColumn rightbc;
-            rightColumn = new bool[boardSize];
-            // rightColumn = static_cast<bool*>(malloc(boardSize * sizeof(bool)));
-            // recv(rightbc, bc.rightColumnProcRank, ITERATIONS_PHASE_TAG, MPI_COMM_WORLD, boardSize);
-            // rightColumn = rightbc.column;
-            deleteRightColumn = true;
+            // rightColumn = new bool[boardSize];
+            // recv(rightColumnFromRemote, bc.rightColumnProcRank, ITERATIONS_PHASE_TAG, MPI_COMM_WORLD, boardSize);
+            rightColumn = rightColumnFromRemote;
         }
+
+        // if (leftRequest != nullptr) {
+        //     MPI_Wait(leftRequest, MPI_STATUS_IGNORE);
+        // }
+        // if (rightRequest != nullptr) {
+        //     MPI_Wait(rightRequest, MPI_STATUS_IGNORE);
+        // }
 
         bool* newColumn = generateNewColumn(leftColumn, bc.column, rightColumn, boardSize);
 
-        // free(leftColumn);
-        // free(rightColumn);
-        if (deleteLeftColumn) {
-            delete[] leftColumn;
-        }
-        if (deleteRightColumn) {
-            delete[] rightColumn;
-        }
-        // delete[] bc.column;
         BoardColumn newbc = bc;
         newbc.column = newColumn;
         newBcs.push_back(newbc);
         // printf("Sleeping \n");
-        /* Await all the remaining requests */
         Sleep(1);
 
     }
 
-    // MPI_Request** requestsArray = requests.data();
-    // MPI_Status* statusesArray = new MPI_Status[requests.size()];
-    // MPI_Waitall(requests.size(), *requestsArray, statusesArray);
+    delete[] leftColumnFromRemote, rightColumnFromRemote;
+
+    /* Await all the remaining requests */
+    MPI_Request tempReqs[2];
+    MPI_Status tempStatuses[2];
+    tempReqs[0] = *requests[0];
+    tempReqs[1] = *requests[1];
+    MPI_Request** requestsArray = requests.data();
+    MPI_Status* statusesArray = new MPI_Status[requests.size()];
+    // MPI_Waitall(2, tempReqs, tempStatuses);
+    MPI_Wait(&tempReqs[0], &tempStatuses[0]);
     //
     for (auto& bc : bcs) {
         delete[] bc.column;

@@ -19,6 +19,8 @@ MPI_Request* sendAsync(bool* column, int dest, int tag, MPI_Comm comm, int board
 
 void recv(BoardColumn& e, int src, int tag, MPI_Comm comm, int boardSize);
 
+void recv(bool* column, int src, int tag, MPI_Comm comm, int boardSize);
+
 MPI_Request* recvAsync(BoardColumn& e, int src, int tag, MPI_Comm comm, int boardSize);
 
 MPI_Request* recvAsync(bool* column, int src, int tag, MPI_Comm comm, int boardSize);
