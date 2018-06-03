@@ -1,4 +1,6 @@
 #pragma once
+#include <string>
+
 class Master {
 private:
     int boardSize;
@@ -17,7 +19,7 @@ public:
         delete[] processesInCharge;
     }
 
-    void sendColumnsInCharge();
+    void sendColumnsInCharge(std::string boardInitPattern);
 
     void recvColumnsToSave(int iteration);
 };

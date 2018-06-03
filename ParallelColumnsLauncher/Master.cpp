@@ -13,8 +13,16 @@ int getDestSlave(int columnIndex, int threads) {
     return (columnIndex % (threads - 1)) + 1;
 }
 
-void Master::sendColumnsInCharge() {
-    bool** startingBoard = verticalStripesBoard(boardSize);
+void Master::sendColumnsInCharge(std::string boardInitPattern) {
+    bool** startingBoard;
+    if (boardInitPattern == "verticalStripes") {
+        startingBoard = verticalStripesBoard(boardSize);
+    } else if (boardInitPattern == "random") {
+        startingBoard = randomBoard(boardSize);
+    } else {
+        printf("Unknown boardInitPattern: %s", boardInitPattern.c_str());
+        throw 1;
+    }
 
     /* Populating every process with columns they are responsible for */
     for (int i = 0; i < boardSize; i++) {
