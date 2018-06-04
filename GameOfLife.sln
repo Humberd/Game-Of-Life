@@ -7,6 +7,7 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "GameOfLife", "GameOfLife\Ga
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{65517D4D-8FC9-49FB-858F-092522BD5B2C}"
 	ProjectSection(SolutionItems) = preProject
+		benchmark.js = benchmark.js
 		README.md = README.md
 	EndProjectSection
 EndProject
