@@ -5,7 +5,7 @@
 
 Install dependencies like a guy did in the video below.
 * Install Visual Studio 2019
-* Install MPI -> https://www.youtube.com/watch?v=yYlJc9REY60
+* Install MPI -> https://www.youtube.com/watch?v=yYlJc9REY60 (project is already set up using environment variables, so you don't have to configure it)
 
 ## How to run
 
